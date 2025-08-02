@@ -35,7 +35,6 @@ public class ConfigurationSecurity {
         .authorizeHttpRequests(
             authorize -> authorize
                 .requestMatchers("/post/**").permitAll()
-                .requestMatchers("/root/**").authenticated()
                 .requestMatchers(HttpMethod.POST, "/root/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/root/create").permitAll()
                 .anyRequest().authenticated())

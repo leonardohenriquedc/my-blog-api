@@ -6,6 +6,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import com.leo.my_blog_api.dtos.PostsDocsDTO;
@@ -50,8 +51,14 @@ public class UserAdminService implements UserDetailsService {
   }
 
   public UserDTO newUser(UserDTO userDTO) {
-    User user = new User(null, userDTO.getName(), userDTO.getEmail(), userDTO.getPassword(),
+    User user = new User(null, userDTO.getName(), userDTO.getEmail(), null,
         this.roleService.getRoleByRoleName("ROLE_USER"));
+
+    String passwordEncoded = new BCryptPasswordEncoder().encode(userDTO.getPassword());
+
+    user.setPassword(passwordEncoded);
+
+    user = this.userRepository.save(user);
 
     return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword());
   }

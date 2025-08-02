@@ -5,20 +5,21 @@ import java.util.Date;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import io.jsonwebtoken.Jwts;
+import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
 
 @Component
 public class JwtUtils {
 
-  @Value("secretKey")
-  String secretKey;
+  @Value("${secretKey}")
+  private String secretKey;
 
   public String generateToken(String username) {
     return Jwts.builder()
         .setSubject(username)
         .setIssuedAt(new Date())
         .setExpiration(Date.from(getTime()))
-        .signWith(Keys.hmacShaKeyFor(secretKey.getBytes()), io.jsonwebtoken.SignatureAlgorithm.HS256)
+        .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.secretKey)), io.jsonwebtoken.SignatureAlgorithm.HS256)
         .compact();
 
   }
