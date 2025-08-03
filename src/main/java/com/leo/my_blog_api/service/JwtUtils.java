@@ -19,14 +19,14 @@ public class JwtUtils {
         .setSubject(username)
         .setIssuedAt(new Date())
         .setExpiration(Date.from(getTime()))
-        .signWith(Keys.hmacShaKeyFor(Decoders.BASE64.decode(this.secretKey)), io.jsonwebtoken.SignatureAlgorithm.HS256)
+        .signWith(Keys.hmacShaKeyFor(getSecretKeyDecoded(this.secretKey)), io.jsonwebtoken.SignatureAlgorithm.HS256)
         .compact();
 
   }
 
   public String extractUsername(String token) {
     return Jwts.parserBuilder()
-        .setSigningKey(secretKey.getBytes())
+        .setSigningKey(getSecretKeyDecoded(token))
         .build()
         .parseClaimsJws(token)
         .getBody()
@@ -35,15 +35,21 @@ public class JwtUtils {
   }
 
   public boolean isValid(String token) {
+    System.out.println("Este e o token do isValid: " + token);
     try {
-      Jwts.parserBuilder().setSigningKey(secretKey.getBytes()).build().parseClaimsJws(token);
+      Jwts.parserBuilder().setSigningKey(getSecretKeyDecoded(this.secretKey)).build().parseClaimsJws(token);
       return true;
     } catch (Exception e) {
+      System.out.println("retornou false");
       return false;
     }
   }
 
-  public Instant getTime() {
+  private Instant getTime() {
     return Instant.now().plusSeconds(60 * 60);
+  }
+
+  private byte[] getSecretKeyDecoded(String secrekey) {
+    return Decoders.BASE64.decode(secretKey);
   }
 }

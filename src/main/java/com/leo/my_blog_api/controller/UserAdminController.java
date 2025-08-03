@@ -43,6 +43,7 @@ public class UserAdminController {
 
   @PostMapping(value = "/newblog")
   public ResponseEntity<PostsDocsDTO> newBlog(@RequestBody PostsDocsDTO postsDocsDTO) {
+    System.out.println("O metodo newblog foi chamado");
     PostsDocsDTO result = this.userAdminService.newBlog(postsDocsDTO);
     return ResponseEntity.ok(result);
   }

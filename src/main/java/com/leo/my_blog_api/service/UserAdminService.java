@@ -47,6 +47,8 @@ public class UserAdminService implements UserDetailsService {
       throw new RuntimeException("Usuario não existe");
     }
 
+    System.out.println(result.get().getRoleId());
+
     return result.get();
   }
 

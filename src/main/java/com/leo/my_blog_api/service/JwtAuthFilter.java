@@ -2,11 +2,14 @@ package com.leo.my_blog_api.service;
 
 import java.io.IOException;
 
+import org.checkerframework.checker.units.qual.t;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
+import org.springframework.security.web.authentication.WebAuthenticationDetailsSource;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -24,25 +27,42 @@ public class JwtAuthFilter extends OncePerRequestFilter {
   @Autowired
   private UserDetailsService userDetailsService;
 
+  @Autowired
+  private UserAdminService userAdminService;
+
   @Override
   protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain)
       throws ServletException, IOException {
 
-    String authHeader = request.getHeader("Authorization");
+    try {
 
-    if (authHeader != null && authHeader.startsWith("Bearer ")) {
-      String jwt = authHeader.substring(7);
+      String token = request.getHeader("Authorization");
 
-      if (this.jwtUtils.isValid(jwt)) {
-        String username = this.jwtUtils.extractUsername(jwt);
-        UserDetails userDetails = userDetailsService.loadUserByUsername(username);
-        UsernamePasswordAuthenticationToken authToken = new UsernamePasswordAuthenticationToken(userDetails, null,
+      if (token != null && token.startsWith("Bearer ")) {
+
+        token = token.substring(7);
+
+        System.out.println("Token esta sem o Bearer: " + token);
+
+        String subject = jwtUtils.isValid(token) ? jwtUtils.extractUsername(token) : "";
+
+        if (subject.isBlank())
+          throw new RuntimeException("subject e nulo");
+
+        UserDetails userDetails = userAdminService.loadUserByUsername(subject);
+
+        UsernamePasswordAuthenticationToken authentication = new UsernamePasswordAuthenticationToken(subject, null,
             userDetails.getAuthorities());
 
-        SecurityContextHolder.getContext().setAuthentication(authToken);
+        SecurityContextHolder.getContext().setAuthentication(authentication);
       }
-    }
 
-    filterChain.doFilter(request, response);
+      filterChain.doFilter(request, response);
+
+    } catch (UsernameNotFoundException ex) {
+      response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+      response.getWriter().write("Usuário não encontrado");
+      response.getWriter().flush();
+    }
   }
 }
