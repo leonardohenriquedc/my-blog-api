@@ -53,7 +53,7 @@ public class ConfigurationSecurity {
         registry.addMapping("/**")
             .allowedOrigins(
                 "http://localhost:4200",
-                "https://245c6aeee35d.ngrok-free.app")
+                "https://myblog-frontend-kappa.vercel.app")
             .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
             .allowedHeaders("*")
             .allowCredentials(true);
