@@ -53,15 +53,35 @@ public class UserAdminService implements UserDetailsService {
   }
 
   public UserDTO newUser(UserDTO userDTO) {
-    User user = new User(null, userDTO.getName(), userDTO.getEmail(), null,
-        this.roleService.getRoleByRoleName("ROLE_USER"));
 
-    String passwordEncoded = new BCryptPasswordEncoder().encode(userDTO.getPassword());
+    try {
+      User user = new User(null, userDTO.getName(), userDTO.getEmail(), null,
+          this.roleService.getRoleByRoleName("ROLE_USER"));
 
-    user.setPassword(passwordEncoded);
+      String passwordEncoded = new BCryptPasswordEncoder().encode(userDTO.getPassword());
 
-    user = this.userRepository.save(user);
+      user.setPassword(passwordEncoded);
 
-    return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword());
+      user = this.userRepository.save(user);
+
+      return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword());
+
+    } catch (Exception e) {
+      throw new RuntimeException("could not create user");
+    }
+    /*
+     * User user = new User(null, userDTO.getName(), userDTO.getEmail(), null,
+     * this.roleService.getRoleByRoleName("ROLE_USER"));
+     * 
+     * String passwordEncoded = new
+     * BCryptPasswordEncoder().encode(userDTO.getPassword());
+     * 
+     * user.setPassword(passwordEncoded);
+     * 
+     * user = this.userRepository.save(user);
+     * 
+     * return new UserDTO(user.getId(), user.getName(), user.getEmail(),
+     * user.getPassword());
+     */
   }
 }

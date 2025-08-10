@@ -60,6 +60,9 @@ public class UserAdminController {
 
   @PostMapping(value = "/create")
   public ResponseEntity<UserDTO> newUser(@RequestBody @Valid UserDTO userDTO) {
+
+    System.out.println("method create called");
+
     System.out.println("O methodo foi chamado 'newUser - controller'");
     userDTO = this.userAdminService.newUser(userDTO);
 
