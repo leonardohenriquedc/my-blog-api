@@ -67,21 +67,10 @@ public class UserAdminService implements UserDetailsService {
       return new UserDTO(user.getId(), user.getName(), user.getEmail(), user.getPassword());
 
     } catch (Exception e) {
+
+      System.out.println(e.getMessage());
+
       throw new RuntimeException("could not create user");
     }
-    /*
-     * User user = new User(null, userDTO.getName(), userDTO.getEmail(), null,
-     * this.roleService.getRoleByRoleName("ROLE_USER"));
-     * 
-     * String passwordEncoded = new
-     * BCryptPasswordEncoder().encode(userDTO.getPassword());
-     * 
-     * user.setPassword(passwordEncoded);
-     * 
-     * user = this.userRepository.save(user);
-     * 
-     * return new UserDTO(user.getId(), user.getName(), user.getEmail(),
-     * user.getPassword());
-     */
   }
 }
